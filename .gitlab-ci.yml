@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+deploy-job-master:
+  stage: deploy
+  image: docker:latest
+  script: 
+    - docker ps
+    - docker system prune -a --volumes -f
+    - docker login -u jupetr -p $dockerhub
+    - cd VirtualMe && docker buildx build --progress=plain --force-rm --push -t jupetr/virtualme:latest .
+  environment: 
+    name: staging
+  only: 
+    - main

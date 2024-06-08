@@ -1,0 +1,36 @@
+services: 
+  sql:
+    image: postgres:16
+    container_name: VirtualMe-sql
+    ports:
+     #external: internal
+      - 7890:5432
+    volumes:
+     - sql-volume:/var/lib/postgresql/data
+    environment:
+     - POSTGRES_PASSWORD=postgres
+     - POSTGRES_USER=postgres
+    restart: on-failure
+    logging:
+      options:
+        max-size: 10m
+        max-file: 3
+      
+
+  app:
+    build: ./VirtualMe/
+    container_name: VirtualMe-app
+    ports: 
+      - 8080:8080
+    restart: on-failure
+    logging:
+      options: 
+        max-size: 10m
+        max-file: 3
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=VirtualMe-sql;Port=5432;Database=VirtualMe;Username=postgres;Password=postgres"
+    depends_on: 
+      - sql
+
+volumes:
+  sql-volume:
